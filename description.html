@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <title>Thông tin phim</title>
+    <script src="data.js"></script>
+</head>
+<body>
+    <a href="index.html">⬅ Quay lại Trang chủ</a>
+    <hr>
+
+    <h1 id="movie-title">Đang tải tên phim...</h1>
+    <p><strong>Loại phim:</strong> <span id="movie-type">...</span></p>
+    <p><strong>Mô tả:</strong> <span id="movie-desc">...</span></p>
+
+    <script>
+        document.addEventListener("DOMContentLoaded", function() {
+            // 1. Lấy "mã vé" từ thanh địa chỉ URL
+            const urlParams = new URLSearchParams(window.location.search);
+            const movieId = urlParams.get('id');
+            
+            // 2. Dùng mã vé đó tra cứu dữ liệu trong file data.js
+            const movieInfo = mhentData[movieId];
+            
+            // 3. Đắp dữ liệu vào khung xương HTML
+            if (movieInfo) {
+                document.getElementById('movie-title').innerText = movieInfo.title;
+                // Nếu type là series thì in ra Phim Bộ, ngược lại in Phim Lẻ
+                document.getElementById('movie-type').innerText = (movieInfo.type === 'series') ? 'Phim Bộ' : 'Phim Lẻ';
+                document.getElementById('movie-desc').innerText = movieInfo.desc;
+            } else {
+                document.getElementById('movie-title').innerText = "❌ Phim không tồn tại!";
+            }
+        });
+    </script>
+</body>
+</html>
