@@ -1051,3 +1051,41 @@ body.dark-mode .footer-link:hover {
         padding-top: 40px; 
     }
 }
+
+/* =========================================
+   SETTINGS: DARK MODE - TỔNG HỢP
+     (Tất cả các chỉnh sửa liên quan đến Dark Mode sẽ được gom chung vào đây để dễ quản lý)
+   ========================================= */
+
+/* 1. Ép nền đen tuyền, đè bẹp cái gradient */
+body.dark-mode {
+    background: #0f0f16 !important; 
+    color: #f1f1f1 !important;
+}
+
+/* 2. Đổi màu thanh điều hướng Navbar cho tiệp màu nền */
+body.dark-mode .navbar {
+    background: #0f0f16 !important;
+    border-bottom: 1px solid #2a2a35;
+}
+
+/* 3. Tối màu các hộp thông tin và cột danh sách tập */
+body.dark-mode .info-content-box,
+body.dark-mode .episode-sidebar {
+    background: #1a1a2e !important; 
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.5) !important;
+}
+
+/* 4. Cứu vớt những dòng chữ bị chìm (Mô tả, Tên phim, Thẻ tag) */
+body.dark-mode .info-content-box h1,
+body.dark-mode .info-content-box p,
+body.dark-mode .info-content-box span,
+body.dark-mode .info-content-box strong,
+body.dark-mode .episode-sidebar h3 {
+    color: #e0e0e0 !important; 
+}
+
+/* 5. Cho cái viền sáng nhẹ để nhìn sang trọng hơn */
+body.dark-mode .info-content-box {
+    border: 1px solid #2a2a35 !important;
+}
