@@ -1089,3 +1089,44 @@ body.dark-mode .episode-sidebar h3 {
 body.dark-mode .info-content-box {
     border: 1px solid #2a2a35 !important;
 }
+
+/* =========================================
+   FIX NẾU KHÔNG CÓ TẬP PHIM
+   ========================================= */
+.loading-overlay {
+    position: fixed !important; /* Bao phủ toàn màn hình, che hết chữ "Đang kết nối" */
+    top: 0; left: 0;
+    width: 100vw; height: 100vh;
+    background: rgba(255, 255, 255, 0.98); /* Nền trắng mịn */
+    z-index: 10000; /* Luôn nằm trên cùng */
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 20px;
+}
+
+/* Tự động đổi nền đen nếu đang Tắt đèn */
+body.dark-mode .loading-overlay {
+    background: #0f0f16;
+}
+
+#loading-text-display {
+    font-size: 1.4rem !important; /* Chữ to rõ ràng */
+    max-width: 600px;
+    line-height: 1.6;
+    margin-bottom: 25px !important;
+}
+
+#btn-emergency-back {
+    font-size: 1.1rem !important;
+    padding: 12px 35px !important;
+    border-radius: 50px !important; /* Nút bo tròn kiểu MHEnt */
+    box-shadow: 0 4px 15px rgba(233, 69, 96, 0.3);
+    transition: 0.3s;
+}
+
+#btn-emergency-back:hover {
+    transform: scale(1.05);
+    background: #ff85a2 !important;
+}
