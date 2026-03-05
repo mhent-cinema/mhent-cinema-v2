@@ -2,13 +2,175 @@
 <html lang="vi">
 <head>
     <meta charset="UTF-8">
-    <title>Trang Chủ - MHEnt. V2</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Trang chủ - MHEnt. Cinema</title>
+    <link rel="stylesheet" href="style.css">
+    <link rel="icon" type="image/jpeg" href="assets/icon-web.png">
+    <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;700;900&display=swap" rel="stylesheet">
+    <script src="data.js"></script>
 </head>
 <body>
-    <h1>🎬 Rạp Chiếu Phim MHEnt. (Khung Xương)</h1>
-    <ul>
-        <li><a href="description.html?id=meitantei-precure">👉 Xem Star Detective Pretty Cure!</a></li>
-        <li><a href="description.html?id=eiga-kimi-to-idol-precure">👉 Xem Kimi to Idol Pretty Cure Movie</a></li>
-    </ul>
+
+    <nav class="navbar">
+        <div class="nav-left">
+            <a onclick="window.location.href='index.html'" style="cursor: pointer;">
+                <img src="assets/avt-web.jpg" alt="Avatar Web" class="avt-img">
+                <span class="logo-name">MHEnt. - Cinema</span>
+            </a>
+        </div>
+        <ul class="nav-links">
+            <li><a onclick="window.location.href='index.html'" style="cursor: pointer;">Trang chủ</a></li>
+            <li><a onclick="window.location.href='index.html#phim-dang-chieu'" style="cursor: pointer;">Danh sách Phim</a></li>
+            <li><a onclick="window.location.href='about.html'" style="cursor: pointer;">Về chúng tớ</a></li>
+        </ul>
+    </nav>
+
+    <header class="hero">
+        <h1>Chào mừng đến với MHEnt. - Cinema!! 🌟</h1>
+        <p class="small-description">Vũ trụ điện ảnh thu nhỏ – Trải nghiệm bản dịch tâm huyết từ MHEnt. và hơn cả thế! 🎬</p>
+        <a onclick="window.location.href='index.html#phim-dang-chieu'" class="btn-primary" style="cursor: pointer;">Khám phá ngay </a>
+    </header>
+
+    <main id="phim-dang-chieu" class="movie-section">
+        <h2 class="section-title">Phim đang chiếu</h2>
+        
+        <div class="movie-list" id="movie-list-container">
+            <div class="movie-card" id="coming-soon-card">
+                <div class="anime-poster bg-gray placeholder-img" style="cursor: not-allowed;">Coming Soon...</div>
+                <div class="movie-info">
+                    <h3>Coming Soon...</h3>
+                    <p>Coming Soon...</p>
+                    <span class="watch-link disabled">Đang tải...</span>
+                </div>
+            </div>
+        </div>
+    </main>
+    
+    <button id="btn-back-to-top" title="Lên đầu trang">⬆</button>
+    
+    <footer>
+        <div class="footer-bottom">
+            <p>©2026 Miyazaki Haruto Entertainment Co., Ltd.</p>
+            <div class="footer-social">
+                <a onclick="window.location.href='https://www.facebook.com/mharuto.entertainment/'" style="cursor: pointer;" target="_blank" class="footer-link">📘 Fanpage MHEnt.</a>
+                <span class="footer-dot">•</span>
+                <a onclick="window.location.href='https://www.facebook.com/groups/mhent.cinema'" style="cursor: pointer;" target="_blank" class="footer-link">🍿 Rạp phim Facebook</a>
+            </div>
+        </div>
+    </footer>
+
+    <script type="module">
+        // 1. Nhập khẩu các thiết bị kết nối từ Google
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-app.js";
+        import { getFirestore, collection, getDocs } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-firestore.js";
+
+        // 2. Chìa khóa vạn năng của cậu
+        const firebaseConfig = {
+            apiKey: "AIzaSyAticyRN5vynyWshwGZUn6u6Oj-JfR9Vds",
+            authDomain: "mhent-cinema.firebaseapp.com",
+            projectId: "mhent-cinema",
+            storageBucket: "mhent-cinema.firebasestorage.app",
+            messagingSenderId: "603929989829",
+            appId: "1:603929989829:web:98eac7f48e7ad6fc4e96ac",
+            measurementId: "G-3MSMXKV5BE"
+        };
+
+        // 3. Khởi động hệ thống
+        const app = initializeApp(firebaseConfig);
+        const db = getFirestore(app);
+
+        document.addEventListener("DOMContentLoaded", async function() {
+            const container = document.getElementById('movie-list-container');
+            const comingSoon = document.getElementById('coming-soon-card');
+            
+            container.innerHTML = '<p style="text-align:center; color:#ff85a2; width:100%;">🌟 Đang kết nối với vệ tinh MHEnt...</p>'; 
+
+            try {
+                const querySnapshot = await getDocs(collection(db, "movies"));
+                
+                // 1. GOM PHIM VÀO RỔ
+                let danhSachPhim = [];
+                querySnapshot.forEach((doc) => {
+                    danhSachPhim.push({ id: doc.id, ...doc.data() });
+                });
+
+                // 2. MA THUẬT SẮP XẾP (Phim mới nhất / Vừa cập nhật tập mới sẽ lên đầu)
+                danhSachPhim.sort((a, b) => (b.updatedAt || 0) - (a.updatedAt || 0));
+
+                container.innerHTML = ''; 
+
+                // 3. IN RA MÀN HÌNH
+                danhSachPhim.forEach((movie) => {
+                    // Tự động tính toán số tập phim (Bản nâng cấp)
+                    let currentStatus = "";
+                    const epCount = movie.episodes ? movie.episodes.length : 0;
+
+                    if (movie.type === 'movie') {
+                        // Nếu là Phim lẻ: Kiểm tra xem có tập nào chưa, chưa có thì ghi None
+                        currentStatus = epCount > 0 ? "Current: Full" : "Current: None";
+                    } else {
+                        // Nếu là Phim bộ
+                        currentStatus = `Current: Episode ${epCount}`;
+                    }
+
+                    const cardHTML = `
+                        <div class="movie-card">
+                            <a onclick="window.location.href='description.html?id=${movie.id}'" style="cursor: pointer;">
+                                <img src="${movie.poster}" alt="${movie.title}" class="anime-poster">
+                            </a>
+                            <div class="movie-info">
+                                <h3>${movie.title}</h3>
+                                <p>${currentStatus}</p>
+                                <a onclick="window.location.href='watch.html?id=${movie.id}'" style="cursor: pointer;" class="watch-link">▶ Xem phim</a>
+                            </div>
+                        </div>
+                    `;
+                    container.innerHTML += cardHTML;
+                });
+
+                container.appendChild(comingSoon);
+
+            } catch (error) {
+                console.error("Lỗi: ", error);
+                container.innerHTML = `<p style="color:red;">❌ Rạp gặp sự cố kết nối: ${error.message}</p>`;
+            }
+        });
+
+        // ==========================================
+        // CÁC BÙA CHÚ BẢO VỆ VÀ GIAO DIỆN BÊN DƯỚI
+        // ==========================================
+        
+        // 🛑 BÙA CHÚ CẤM TRÌNH DUYỆT TỰ ĐỘNG CUỘN TRANG
+        if ('scrollRestoration' in history) { history.scrollRestoration = 'manual'; }
+        window.scrollTo(0, 0);
+        
+        // Back to Top 
+        const backToTopBtn = document.getElementById("btn-back-to-top");
+        if (backToTopBtn) { 
+            window.addEventListener("scroll", () => {
+                if (document.body.scrollTop > 300 || document.documentElement.scrollTop > 300) {
+                    backToTopBtn.style.display = "block";
+                } else {
+                    backToTopBtn.style.display = "none";
+                }
+            });
+            backToTopBtn.addEventListener("click", () => {
+                window.scrollTo({ top: 0, behavior: "smooth" });
+            });
+        }
+
+        // Chặn F12, Ctrl+Shift+I, Ctrl+Shift+J, Ctrl+U
+        document.addEventListener('keydown', function(e) {
+            if (e.key === 'F12' || (e.ctrlKey && e.shiftKey && (e.key === 'I' || e.key === 'J')) || (e.ctrlKey && e.key === 'U')) {
+                e.preventDefault();
+                return false;
+            }
+        });
+
+        // Chặn menu chuột phải
+        document.addEventListener('contextmenu', function(e) {
+            e.preventDefault();
+        });
+    </script>
 </body>
 </html>

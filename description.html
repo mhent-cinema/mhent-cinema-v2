@@ -7,8 +7,7 @@
     <link rel="stylesheet" href="style.css">
     <link rel="icon" type="image/jpeg" href="assets/icon-web.png">
     <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;700;900&display=swap" rel="stylesheet">
-    <script src="data.js"></script>
-</head>
+    </head>
 <body class="gradient-bg">
 
     <nav class="navbar">
@@ -34,7 +33,7 @@
         
         <div class="info-box">
             <span id="movie-tag" class="tag">Đang tải...</span><br><br>
-            <h1 id="movie-title">Đang tải tên phim...</h1>
+            <h1 id="movie-title">Đang kết nối vệ tinh...</h1>
             <p><strong>Tên khác:</strong><br> <span id="movie-alt-title">Đang tải...</span></p>
             <p><strong>Tình trạng:</strong> <span id="movie-status">Đang tải...</span></p>
             <p><strong>Bản dịch:</strong> <span id="movie-translator">Team Subtitle - MHEnt</span></p>
@@ -72,73 +71,89 @@
         </div>
     </footer>
 
-    <script>
-        // BÙA CHÚ CẤM CUỘN TRANG
-        if ('scrollRestoration' in history) {
-            history.scrollRestoration = 'manual';
-        }
-        window.scrollTo(0, 0);
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-app.js";
+        import { getFirestore, doc, getDoc } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-firestore.js";
 
-        // Biến toàn cục để chứa link trailer
-        let currentTrailerLink = "";
+        const firebaseConfig = {
+            apiKey: "AIzaSyAticyRN5vynyWshwGZUn6u6Oj-JfR9Vds",
+            authDomain: "mhent-cinema.firebaseapp.com",
+            projectId: "mhent-cinema",
+            storageBucket: "mhent-cinema.firebasestorage.app",
+            messagingSenderId: "603929989829",
+            appId: "1:603929989829:web:98eac7f48e7ad6fc4e96ac"
+        };
 
-        document.addEventListener("DOMContentLoaded", function() {
+        const app = initializeApp(firebaseConfig);
+        const db = getFirestore(app);
+
+        // Biến toàn cục chứa link trailer
+        window.currentTrailerLink = "";
+
+        document.addEventListener("DOMContentLoaded", async function() {
             // 1. Soi "mã vé" trên URL
             const urlParams = new URLSearchParams(window.location.search);
             const movieId = urlParams.get('id');
-            const movieInfo = mhentData[movieId];
 
-            if (movieInfo) {
-                // 2. Bơm dữ liệu vào Giao diện
-                document.title = movieInfo.title + " - MHEnt. Cinema";
-                document.getElementById('movie-poster').src = movieInfo.poster;
-                document.getElementById('movie-title').innerHTML = movieInfo.title;
-                document.getElementById('movie-tag').innerHTML = movieInfo.tag;
-                document.getElementById('movie-alt-title').innerHTML = movieInfo.altTitle;
-                document.getElementById('movie-status').innerHTML = movieInfo.status;
-                document.getElementById('movie-desc').innerHTML = movieInfo.desc;
+            if (movieId) {
+                try {
+                    // Lên Mây lấy đúng 1 bộ phim về
+                    const docSnap = await getDoc(doc(db, "movies", movieId));
+                    
+                    if (docSnap.exists()) {
+                        const movieInfo = docSnap.data();
 
-                // 3. Xử lý Trailer
-                if (movieInfo.trailer) {
-                    currentTrailerLink = movieInfo.trailer;
-                    document.getElementById('btn-trailer').style.display = 'inline-flex';
-                }
+                        // 2. Bơm dữ liệu vào Giao diện
+                        document.title = movieInfo.title + " - MHEnt. Cinema";
+                        document.getElementById('movie-poster').src = movieInfo.poster || '';
+                        document.getElementById('movie-title').innerHTML = movieInfo.title || '';
+                        document.getElementById('movie-tag').innerHTML = movieInfo.tag || '';
+                        document.getElementById('movie-alt-title').innerHTML = movieInfo.altTitle || '';
+                        document.getElementById('movie-status').innerHTML = movieInfo.status || '';
+                        document.getElementById('movie-desc').innerHTML = movieInfo.desc || '';
 
-                // 4. Xử lý Nút Bấm & Trí Nhớ
-                let mainBtn = document.getElementById('btn-watch-main');
-                let continueBtn = document.getElementById('btn-continue-watch');
-                
-                if (movieInfo.type === 'series') {
-                    // Tạo chìa khóa trí nhớ riêng cho phim bộ này
-                    let localKey = 'mhent_' + movieId + '_last_ep';
-                    let lastEpIndex = localStorage.getItem(localKey);
+                        // 3. Xử lý Trailer
+                        if (movieInfo.trailer) {
+                            window.currentTrailerLink = movieInfo.trailer;
+                            document.getElementById('btn-trailer').style.display = 'inline-flex';
+                        }
 
-                    // Lệnh tẩy não khi bấm "Xem từ đầu"
-                    mainBtn.onclick = function() {
-                        localStorage.setItem(localKey, 0); 
-                        window.location.href = 'watch.html?id=' + movieId;
-                    };
+                        // 4. Xử lý Nút Bấm & Trí Nhớ
+                        let mainBtn = document.getElementById('btn-watch-main');
+                        let continueBtn = document.getElementById('btn-continue-watch');
+                        
+                        if (movieInfo.type === 'series') {
+                            let localKey = 'mhent_' + movieId + '_last_ep';
+                            let lastEpIndex = localStorage.getItem(localKey);
 
-                    // Nếu đã xem dở
-                    if (lastEpIndex !== null) {
-                        let epNumber = parseInt(lastEpIndex) + 1;
-                        mainBtn.innerHTML = '▶ Xem từ đầu';
-                        continueBtn.innerHTML = '▶ Tiếp tục xem Tập ' + epNumber;
-                        continueBtn.href = 'watch.html?id=' + movieId;
-                        continueBtn.style.display = 'inline-flex';
+                            mainBtn.onclick = function() {
+                                localStorage.setItem(localKey, 0); 
+                                window.location.href = 'watch.html?id=' + movieId;
+                            };
+
+                            if (lastEpIndex !== null) {
+                                let epNumber = parseInt(lastEpIndex) + 1;
+                                mainBtn.innerHTML = '▶ Xem từ đầu';
+                                continueBtn.innerHTML = '▶ Tiếp tục xem Tập ' + epNumber;
+                                continueBtn.href = 'watch.html?id=' + movieId;
+                                continueBtn.style.display = 'inline-flex';
+                            } else {
+                                mainBtn.href = 'watch.html?id=' + movieId;
+                                mainBtn.onclick = null; 
+                            }
+                        } else {
+                            mainBtn.href = 'watch.html?id=' + movieId;
+                        }
                     } else {
-                        // Chưa xem bao giờ
-                        mainBtn.href = 'watch.html?id=' + movieId;
-                        mainBtn.onclick = null; // Hủy lệnh tẩy não
+                        document.getElementById('movie-title').innerText = "❌ Phim chưa được cập nhật!";
+                        document.getElementById('action-buttons').style.display = 'none';
                     }
-                } else {
-                    // Phim lẻ (movie) thì auto vào rạp, không cần quan tâm lịch sử
-                    mainBtn.href = 'watch.html?id=' + movieId;
+                } catch (error) {
+                    console.error("Lỗi:", error);
+                    document.getElementById('movie-title').innerText = "❌ Lỗi kết nối Mây!";
                 }
-
             } else {
-                // Bắt lỗi nếu nhập sai link
-                document.getElementById('movie-title').innerText = "❌ Phim không tồn tại!";
+                document.getElementById('movie-title').innerText = "❌ Không tìm thấy mã phim!";
                 document.getElementById('action-buttons').style.display = 'none';
             }
         });
@@ -147,31 +162,32 @@
         var modal = document.getElementById('trailerModal');
         var iframe = document.getElementById('trailerIframe');
 
-        function openTrailer() {
+        window.openTrailer = function() {
             modal.style.display = 'flex';
-            iframe.src = currentTrailerLink; 
-        }
+            iframe.src = window.currentTrailerLink; 
+        };
 
-        function closeTrailer() {
+        window.closeTrailer = function() {
             modal.style.display = 'none';
-            iframe.src = ""; // Cắt điện video
-        }
+            iframe.src = ""; 
+        };
 
-        // Đóng trailer bằng phím ESC
         document.addEventListener('keydown', function(event) {
             if (event.key === "Escape" && modal.style.display === 'flex') {
-                closeTrailer();
+                window.closeTrailer();
             }
         });
 
-        // Đóng trailer khi click ra ngoài đen
         window.onclick = function(event) {
             if (event.target === modal) {
-                closeTrailer();
+                window.closeTrailer();
             }
-        }
+        };
 
-        // BACK TO TOP
+        // BÙA CHÚ VÀ BACK TO TOP (Giữ nguyên)
+        if ('scrollRestoration' in history) { history.scrollRestoration = 'manual'; }
+        window.scrollTo(0, 0);
+
         const backToTopBtn = document.getElementById("btn-back-to-top");
         if (backToTopBtn) { 
             window.addEventListener("scroll", () => {
@@ -181,21 +197,15 @@
                     backToTopBtn.style.display = "none";
                 }
             });
-            backToTopBtn.addEventListener("click", () => {
-                window.scrollTo({ top: 0, behavior: "smooth" });
-            });
+            backToTopBtn.addEventListener("click", () => { window.scrollTo({ top: 0, behavior: "smooth" }); });
         }
 
-        // CHỐNG F12
         document.addEventListener('keydown', function(e) {
             if (e.key === 'F12' || (e.ctrlKey && e.shiftKey && (e.key === 'I' || e.key === 'J')) || (e.ctrlKey && e.key === 'U')) {
-                e.preventDefault();
-                return false;
+                e.preventDefault(); return false;
             }
         });
-        document.addEventListener('contextmenu', function(e) {
-            e.preventDefault();
-        });
+        document.addEventListener('contextmenu', function(e) { e.preventDefault(); });
     </script>
 </body>
 </html>
