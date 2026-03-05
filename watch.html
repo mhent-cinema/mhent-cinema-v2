@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <title>Rạp Chiếu Phim - MHEnt.</title>
+    <script src="data.js"></script>
+</head>
+<body>
+    <button onclick="window.history.back()">⬅ Quay lại trang trước</button>
+    <hr>
+
+    <h2 id="movie-title">Đang tải rạp...</h2>
+    <h3 id="ep-title" style="color: #ff85a2;">Đang kết nối máy chiếu...</h3>
+
+    <iframe id="video-player" width="700" height="400" src="" frameborder="0" allowfullscreen></iframe>
+
+    <div id="episode-list" style="margin-top: 20px;">
+        </div>
+
+    <script>
+        document.addEventListener("DOMContentLoaded", function() {
+            // 1. Soát vé trên URL
+            const urlParams = new URLSearchParams(window.location.search);
+            const movieId = urlParams.get('id');
+            const movieInfo = mhentData[movieId];
+
+            if (movieInfo && movieInfo.episodes) {
+                // 2. In tên phim
+                document.getElementById('movie-title').innerText = movieInfo.title;
+
+                // 3. Máy đẻ nút bấm
+                const epListDiv = document.getElementById('episode-list');
+                movieInfo.episodes.forEach((ep, index) => {
+                    let btn = document.createElement('button');
+                    btn.innerText = ep.title; // Ghi chữ Tập 1, Tập 2...
+                    btn.style.marginRight = "10px";
+                    btn.style.padding = "5px 10px";
+                    
+                    // Khi bấm nút thì gọi hàm chiếu phim
+                    btn.onclick = function() {
+                        playEpisode(index, movieInfo);
+                    };
+                    epListDiv.appendChild(btn);
+                });
+
+                // 4. Auto chiếu tập đầu tiên (Tập 1 hoặc Tập Full) khi vừa vào rạp
+                playEpisode(0, movieInfo);
+
+            } else {
+                document.getElementById('movie-title').innerText = "❌ Lỗi: Phim chưa có tập nào!";
+            }
+        });
+
+        // Hàm thay băng đĩa (Đổi link iframe)
+        function playEpisode(index, movieInfo) {
+            const ep = movieInfo.episodes[index];
+            document.getElementById('video-player').src = ep.link; // Thay link video
+            document.getElementById('ep-title').innerText = "Đang phát: " + ep.title; // Đổi dòng chữ đang phát
+        }
+    </script>
+</body>
+</html>

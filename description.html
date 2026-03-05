@@ -13,6 +13,9 @@
     <p><strong>Loại phim:</strong> <span id="movie-type">...</span></p>
     <p><strong>Mô tả:</strong> <span id="movie-desc">...</span></p>
 
+    <br>
+    <a id="btn-watch" href="#" style="display: inline-block; padding: 10px 20px; background: #ff85a2; color: white; text-decoration: none; font-weight: bold; border-radius: 5px;">▶ VÀO RẠP XEM PHIM</a>
+
     <script>
         document.addEventListener("DOMContentLoaded", function() {
             // 1. Lấy "mã vé" từ thanh địa chỉ URL
@@ -25,11 +28,14 @@
             // 3. Đắp dữ liệu vào khung xương HTML
             if (movieInfo) {
                 document.getElementById('movie-title').innerText = movieInfo.title;
-                // Nếu type là series thì in ra Phim Bộ, ngược lại in Phim Lẻ
                 document.getElementById('movie-type').innerText = (movieInfo.type === 'series') ? 'Phim Bộ' : 'Phim Lẻ';
                 document.getElementById('movie-desc').innerText = movieInfo.desc;
+                
+                // 4. BƠM LINK VÀO NÚT BẤM: Truyền vé tiếp sang watch.html
+                document.getElementById('btn-watch').href = "watch.html?id=" + movieId;
             } else {
                 document.getElementById('movie-title').innerText = "❌ Phim không tồn tại!";
+                document.getElementById('btn-watch').style.display = 'none'; // Giấu nút đi nếu không có phim
             }
         });
     </script>
