@@ -10,9 +10,12 @@
     </head>
 <body class="gradient-bg">
 
-    <div id="loading-overlay" class="loading-overlay" style="display: flex;">
-        <div class="spinner"></div>
-        <p style="margin-top: 15px; font-weight: bold; color: #ff85a2;">MHEnt. - Đang chuẩn bị máy chiếu...</p>
+    <div id="loading-overlay" class="loading-overlay" style="display: flex; flex-direction: column; align-items: center; justify-content: center;">
+        <div id="loading-spinner" class="spinner"></div>
+        <p id="loading-text-display" style="margin-top: 15px; font-weight: bold; color: #ff85a2; text-align: center;">MHEnt. - Đang chuẩn bị máy chiếu...</p>
+        <button id="btn-emergency-back" onclick="window.history.back()" style="display: none; margin-top: 20px; padding: 10px 20px; background: #e94560; color: white; border: none; border-radius: 5px; cursor: pointer; font-weight: bold; font-family: 'Nunito', sans-serif;">
+            ⬅ Quay trở về
+        </button>
     </div>
 
     <nav class="navbar">
@@ -133,9 +136,13 @@
 
                         // Nếu phim chưa có tập nào
                         if(!window.currentMovieData.episodes || window.currentMovieData.episodes.length === 0) {
-                            alert("Phim này chưa có tập nào rùi Chủ tịch ơi!");
-                            window.location.href = 'description.html?id=' + window.currentMovieId;
-                            return;
+                            // Tắt vòng xoay
+                            document.getElementById('loading-spinner').style.display = 'none';
+                            // Đổi chữ thông báo
+                            document.getElementById('loading-text-display').innerText = "❌ Hiện phim này chưa có tập nào. Bạn vui lòng quay lại sau nhé!";
+                            // Hiện nút Quay trở về
+                            document.getElementById('btn-emergency-back').style.display = 'block';
+                            return; // Dừng toàn bộ hệ thống rạp tại đây
                         }
 
                         // Bơm thông tin cơ bản

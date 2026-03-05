@@ -1,0 +1,119 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Về chúng tớ - MHEnt. Cinema</title>
+    <link rel="icon" type="image/jpeg" href="assets/avt-web.jpg">
+    <link rel="stylesheet" href="style.css">
+    <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;700;900&display=swap" rel="stylesheet">
+</head>
+<body class="gradient-bg">
+
+    <nav class="navbar">
+        <div class="nav-left">
+            <a onclick="window.location.href='index.html'" style="cursor: pointer;">
+                <img src="assets/avt-web.jpg" alt="Avatar Web" class="avt-img">
+                <span class="logo-name">MHEnt. - Cinema</span>
+            </a>
+        </div>
+        <ul class="nav-links">
+            <li><a onclick="window.location.href='index.html'" style="cursor: pointer;">Trang chủ</a></li>
+            <li><a onclick="window.location.href='index.html#phim-dang-chieu'" style="cursor: pointer;">Danh sách Phim</a></li>
+            <li><a onclick="window.location.href='about.html'" style="cursor: pointer;" class="active-nav">Về chúng tớ</a></li>
+        </ul>
+    </nav>
+
+    <main class="about-container">
+        
+        <section class="about-header">
+            <img src="assets/avt-web.jpg" alt="MHEnt Logo" class="about-logo">
+            <h1>Miyazaki Haruto Entertainment Co., Ltd.</h1>
+            <p class="about-subtitle">Dự án Fan-sub phi lợi nhuận</p>
+            <div class="about-desc">
+                <p>Chào mừng bạn đến với MHEnt. Cinema! Chúng tớ là một nhóm nhỏ đam mê văn hóa 2D, đặc biệt là vũ trụ Pretty Cure. Với mong muốn mang những bộ phim tuyệt vời này đến gần hơn với khán giả Việt Nam, MHEnt. được thành lập để thực hiện các bản vietsub chất lượng, hoàn toàn phi lợi nhuận.</p>
+            </div>
+        </section>
+
+        <section class="about-projects">
+            <h2>🎬 Các dự án nổi bật</h2>
+            <div class="project-grid">
+                <div class="project-card">
+                    <h3 style="color: #ff85a2;">Star Detective Pretty Cure!</h3>
+                    <p>Series dài tập - Đang tiến hành</p>
+                </div>
+                <div class="project-card">
+                    <h3 style="color: #ff85a2;">Eiga Kimi to Idol Pretty Cure♪</h3>
+                    <p>Movie - Đã hoàn thành</p>
+                </div>
+            </div>
+        </section>
+
+        <section class="about-social">
+            <h2>🌐 Mạng lưới kết nối</h2>
+            <p>Theo dõi và ủng hộ chúng tớ tại các nền tảng chính thức nhé!</p>
+            <div class="social-buttons">
+                <a onclick="window.location.href='https://www.facebook.com/mharuto.entertainment/'" style="cursor: pointer;" target="_blank" class="btn-social fb-page">🔗 Fanpage Chính Thức</a>
+                <a onclick="window.location.href='https://www.facebook.com/groups/mhent.cinema'" style="cursor: pointer;" target="_blank" class="btn-social fb-cinema">🍿 Rạp Phim Trên Facebook</a>
+            </div>
+        </section>
+
+    </main>
+
+    <button id="btn-back-to-top" title="Lên đầu trang">⬆</button>
+
+    <footer>
+        <div class="footer-bottom">
+            <p>©2026 Miyazaki Haruto Entertainment Co., Ltd.</p>
+            <div class="footer-social">
+                <a onclick="window.location.href='https://www.facebook.com/mharuto.entertainment/'" style="cursor: pointer;" target="_blank" class="footer-link">📘 Fanpage MHEnt.</a>
+                <span class="footer-dot">•</span>
+                <a onclick="window.location.href='https://www.facebook.com/groups/mhent.cinema'" style="cursor: pointer;" target="_blank" class="footer-link">🍿 Rạp phim Facebook</a>
+            </div>
+        </div>
+    </footer>
+
+    <script>
+        // 🛑 BÙA CHÚ CẤM TRÌNH DUYỆT TỰ ĐỘNG CUỘN TRANG
+        if ('scrollRestoration' in history) {
+            history.scrollRestoration = 'manual'; // Tắt tính năng tự cuộn của Chrome
+        }
+        // Ép trang web luôn bắt đầu từ tọa độ (0, 0) - Tức là trên cùng màn hình
+        window.scrollTo(0, 0);
+        // Tính năng Back to Top (Phiên bản chống lỗi)
+        const backToTopBtn = document.getElementById("btn-back-to-top");
+
+        if (backToTopBtn) { // Kiểm tra xem nút có tồn tại trên trang không
+            window.addEventListener("scroll", () => {
+                // Dùng cả 2 cách đo thanh cuộn cho chắc ăn
+                if (document.body.scrollTop > 300 || document.documentElement.scrollTop > 300) {
+                    backToTopBtn.style.display = "block";
+                } else {
+                    backToTopBtn.style.display = "none";
+                }
+            });
+
+            backToTopBtn.addEventListener("click", () => {
+                window.scrollTo({ top: 0, behavior: "smooth" });
+            });
+        }
+
+        // Chặn F12, Ctrl+Shift+I, Ctrl+Shift+J, Ctrl+U
+        document.addEventListener('keydown', function(e) {
+        if (
+            e.key === 'F12' ||
+            (e.ctrlKey && e.shiftKey && (e.key === 'I' || e.key === 'J')) ||
+            (e.ctrlKey && e.key === 'U')
+        ) {
+            e.preventDefault();
+            return false;
+        }
+        });
+
+        // Chặn menu chuột phải
+        document.addEventListener('contextmenu', function(e) {
+        e.preventDefault();
+        });
+    </script>
+</body>
+</html>
