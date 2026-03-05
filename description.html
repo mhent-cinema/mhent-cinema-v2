@@ -2,41 +2,199 @@
 <html lang="vi">
 <head>
     <meta charset="UTF-8">
-    <title>Thông tin phim</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Đang tải thông tin phim... - MHEnt. Cinema</title>
+    <link rel="stylesheet" href="style.css">
+    <link rel="icon" type="image/jpeg" href="assets/icon-web.png">
+    <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;700;900&display=swap" rel="stylesheet">
     <script src="data.js"></script>
 </head>
-<body>
-    <a href="index.html">⬅ Quay lại Trang chủ</a>
-    <hr>
+<body class="gradient-bg">
 
-    <h1 id="movie-title">Đang tải tên phim...</h1>
-    <p><strong>Loại phim:</strong> <span id="movie-type">...</span></p>
-    <p><strong>Mô tả:</strong> <span id="movie-desc">...</span></p>
+    <nav class="navbar">
+        <div class="nav-left">
+            <a onclick="window.location.href='index.html'" style="cursor: pointer;">
+                <img src="assets/avt-web.jpg" alt="Avatar Web" class="avt-img">
+                <span class="logo-name">MHEnt. - Cinema</span>
+            </a>
+        </div>
+        <ul class="nav-links">
+            <li><a onclick="window.location.href='index.html'" style="cursor: pointer;">Trang chủ</a></li>
+            <li><a onclick="window.location.href='index.html#phim-dang-chieu'" style="cursor: pointer;">Danh sách Phim</a></li>
+            <li><a onclick="window.location.href='about.html'" style="cursor: pointer;">Về chúng tớ</a></li>
+        </ul>
+    </nav>
 
-    <br>
-    <a id="btn-watch" href="#" style="display: inline-block; padding: 10px 20px; background: #ff85a2; color: white; text-decoration: none; font-weight: bold; border-radius: 5px;">▶ VÀO RẠP XEM PHIM</a>
+    <div class="back-btn-wrapper">
+        <a onclick="window.location.href='index.html'" style="cursor: pointer;" class="btn-back">⬅ Quay lại Trang chủ</a>
+    </div>
+
+    <div class="details-container">
+        <img id="movie-poster" src="" alt="Poster" class="poster-big">
+        
+        <div class="info-box">
+            <span id="movie-tag" class="tag">Đang tải...</span><br><br>
+            <h1 id="movie-title">Đang tải tên phim...</h1>
+            <p><strong>Tên khác:</strong><br> <span id="movie-alt-title">Đang tải...</span></p>
+            <p><strong>Tình trạng:</strong> <span id="movie-status">Đang tải...</span></p>
+            <p><strong>Bản dịch:</strong> <span id="movie-translator">Team Subtitle - MHEnt</span></p>
+
+            <p class="description">
+                <strong>Mô tả:</strong><br>
+                <span id="movie-desc">Đang tải mô tả chi tiết của phim...</span>
+            </p>
+            
+            <div class="btn-group" id="action-buttons">
+                <a id="btn-watch-main" class="btn-watch" style="cursor: pointer;">▶ Vào Rạp Xem Phim</a>
+                <a id="btn-continue-watch" class="btn-continue" style="display: none; cursor: pointer;">▶ Xem tiếp phim</a>
+                <button id="btn-trailer" class="btn-trailer" onclick="openTrailer()" style="display: none;">🎬 Xem Trailer</button>
+            </div>
+        </div>
+    </div>
+
+    <div id="trailerModal" class="modal">
+        <div class="modal-content">
+            <span class="close-btn" onclick="closeTrailer()">&times;</span>
+            <iframe id="trailerIframe" src="" allowfullscreen></iframe>
+        </div>
+    </div>
+
+    <button id="btn-back-to-top" title="Lên đầu trang">⬆</button>
+
+    <footer>
+        <div class="footer-bottom">
+            <p>©2026 Miyazaki Haruto Entertainment Co., Ltd.</p>
+            <div class="footer-social">
+                <a onclick="window.location.href='https://www.facebook.com/mharuto.entertainment/'" style="cursor: pointer;" target="_blank" class="footer-link">📘 Fanpage MHEnt.</a>
+                <span class="footer-dot">•</span>
+                <a onclick="window.location.href='https://www.facebook.com/groups/mhent.cinema'" style="cursor: pointer;" target="_blank" class="footer-link">🍿 Rạp phim Facebook</a>
+            </div>
+        </div>
+    </footer>
 
     <script>
+        // BÙA CHÚ CẤM CUỘN TRANG
+        if ('scrollRestoration' in history) {
+            history.scrollRestoration = 'manual';
+        }
+        window.scrollTo(0, 0);
+
+        // Biến toàn cục để chứa link trailer
+        let currentTrailerLink = "";
+
         document.addEventListener("DOMContentLoaded", function() {
-            // 1. Lấy "mã vé" từ thanh địa chỉ URL
+            // 1. Soi "mã vé" trên URL
             const urlParams = new URLSearchParams(window.location.search);
             const movieId = urlParams.get('id');
-            
-            // 2. Dùng mã vé đó tra cứu dữ liệu trong file data.js
             const movieInfo = mhentData[movieId];
-            
-            // 3. Đắp dữ liệu vào khung xương HTML
+
             if (movieInfo) {
-                document.getElementById('movie-title').innerText = movieInfo.title;
-                document.getElementById('movie-type').innerText = (movieInfo.type === 'series') ? 'Phim Bộ' : 'Phim Lẻ';
-                document.getElementById('movie-desc').innerText = movieInfo.desc;
+                // 2. Bơm dữ liệu vào Giao diện
+                document.title = movieInfo.title + " - MHEnt. Cinema";
+                document.getElementById('movie-poster').src = movieInfo.poster;
+                document.getElementById('movie-title').innerHTML = movieInfo.title;
+                document.getElementById('movie-tag').innerHTML = movieInfo.tag;
+                document.getElementById('movie-alt-title').innerHTML = movieInfo.altTitle;
+                document.getElementById('movie-status').innerHTML = movieInfo.status;
+                document.getElementById('movie-desc').innerHTML = movieInfo.desc;
+
+                // 3. Xử lý Trailer
+                if (movieInfo.trailer) {
+                    currentTrailerLink = movieInfo.trailer;
+                    document.getElementById('btn-trailer').style.display = 'inline-flex';
+                }
+
+                // 4. Xử lý Nút Bấm & Trí Nhớ
+                let mainBtn = document.getElementById('btn-watch-main');
+                let continueBtn = document.getElementById('btn-continue-watch');
                 
-                // 4. BƠM LINK VÀO NÚT BẤM: Truyền vé tiếp sang watch.html
-                document.getElementById('btn-watch').href = "watch.html?id=" + movieId;
+                if (movieInfo.type === 'series') {
+                    // Tạo chìa khóa trí nhớ riêng cho phim bộ này
+                    let localKey = 'mhent_' + movieId + '_last_ep';
+                    let lastEpIndex = localStorage.getItem(localKey);
+
+                    // Lệnh tẩy não khi bấm "Xem từ đầu"
+                    mainBtn.onclick = function() {
+                        localStorage.setItem(localKey, 0); 
+                        window.location.href = 'watch.html?id=' + movieId;
+                    };
+
+                    // Nếu đã xem dở
+                    if (lastEpIndex !== null) {
+                        let epNumber = parseInt(lastEpIndex) + 1;
+                        mainBtn.innerHTML = '▶ Xem từ đầu';
+                        continueBtn.innerHTML = '▶ Tiếp tục xem Tập ' + epNumber;
+                        continueBtn.href = 'watch.html?id=' + movieId;
+                        continueBtn.style.display = 'inline-flex';
+                    } else {
+                        // Chưa xem bao giờ
+                        mainBtn.href = 'watch.html?id=' + movieId;
+                        mainBtn.onclick = null; // Hủy lệnh tẩy não
+                    }
+                } else {
+                    // Phim lẻ (movie) thì auto vào rạp, không cần quan tâm lịch sử
+                    mainBtn.href = 'watch.html?id=' + movieId;
+                }
+
             } else {
+                // Bắt lỗi nếu nhập sai link
                 document.getElementById('movie-title').innerText = "❌ Phim không tồn tại!";
-                document.getElementById('btn-watch').style.display = 'none'; // Giấu nút đi nếu không có phim
+                document.getElementById('action-buttons').style.display = 'none';
             }
+        });
+
+        // HỆ THỐNG TRAILER
+        var modal = document.getElementById('trailerModal');
+        var iframe = document.getElementById('trailerIframe');
+
+        function openTrailer() {
+            modal.style.display = 'flex';
+            iframe.src = currentTrailerLink; 
+        }
+
+        function closeTrailer() {
+            modal.style.display = 'none';
+            iframe.src = ""; // Cắt điện video
+        }
+
+        // Đóng trailer bằng phím ESC
+        document.addEventListener('keydown', function(event) {
+            if (event.key === "Escape" && modal.style.display === 'flex') {
+                closeTrailer();
+            }
+        });
+
+        // Đóng trailer khi click ra ngoài đen
+        window.onclick = function(event) {
+            if (event.target === modal) {
+                closeTrailer();
+            }
+        }
+
+        // BACK TO TOP
+        const backToTopBtn = document.getElementById("btn-back-to-top");
+        if (backToTopBtn) { 
+            window.addEventListener("scroll", () => {
+                if (document.body.scrollTop > 300 || document.documentElement.scrollTop > 300) {
+                    backToTopBtn.style.display = "block";
+                } else {
+                    backToTopBtn.style.display = "none";
+                }
+            });
+            backToTopBtn.addEventListener("click", () => {
+                window.scrollTo({ top: 0, behavior: "smooth" });
+            });
+        }
+
+        // CHỐNG F12
+        document.addEventListener('keydown', function(e) {
+            if (e.key === 'F12' || (e.ctrlKey && e.shiftKey && (e.key === 'I' || e.key === 'J')) || (e.ctrlKey && e.key === 'U')) {
+                e.preventDefault();
+                return false;
+            }
+        });
+        document.addEventListener('contextmenu', function(e) {
+            e.preventDefault();
         });
     </script>
 </body>
